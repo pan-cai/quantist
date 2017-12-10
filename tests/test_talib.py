@@ -18,16 +18,34 @@
 
 """ 
 Author: liupan 
-Create date: 
 """
 
 """
-Description: Get data resource
+Description: 
 """
 
 import tushare as ts
+import talib
 
-class GetDataFromTushare(object):
-    # Code is the stock code
-    def getStockData(self, code):
-        return ts.get_hist_data(str(code));
+
+df = ts.get_hist_data('sh')
+closed = df['close'].values
+
+ccitalib=talib.CCI(df['high'].values, df['low'].values, df['close'].values,timeperiod=10)[-1]
+print(ccitalib) # -106.212259763
+
+# ma5 = talib.MA(df['close'], )
+
+cmo = talib.CMO(df['close'].values, timeperiod=14)
+# print(cmo)
+
+ma3 = talib.SMA(closed, timeperiod=3)
+print(ma3[:5]) # [           nan            nan  3285.33333333  3289.89666667  3302.42      ]
+
+
+
+
+
+
+
+

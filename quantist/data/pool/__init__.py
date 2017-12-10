@@ -24,11 +24,3 @@ Create date:
 """
 Description:
 """
-
-import pandas as pd
-from data.getdata import fromrushare
-
-class SaveData(object):
-    def saveToCsv(self,code):
-        stockData = fromrushare.GetDataFromTushare.getStockData(code)
-        stockData.to_csv("s"+code+".csv")
