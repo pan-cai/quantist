@@ -100,6 +100,43 @@ sh["capital"] = 10000000
 sh["label"] = 1
 sh["close_font"] = 2940.006
 sh["change_rate"] = (sh["open"] - sh["close_font"])/sh["open"]
+
+sh["mark"] = sh["change_rate"].map(lambda x: 1 if x>0.1 else (-1 if x<-0.5 else 0 ))
+
+# Other method to calculate mark
+# def change(num):
+#     if num > 0.03:
+#         return 1
+#     elif num < -0.03:
+#         return -1
+#     else:
+#         return 0
+# sh["mark"] = sh["change_rate"].map(change)
+
 print(sh[0:3])
+print("-------------------------------")
+
+"""
+account??
+"""
+for row in range(len(sh["date"])):
+    if sh.ix[row,"mark"] == 1:
+        #print(sh.iloc[m].ma10)
+        sh.ix[row,"cc"] = sh.ix[row,"capital"] - sh.ix[row,"open"]
+
+"""
+close_font
+"""
+for row in range(len(sh["close_font"])):
+    if (row <= 0 or sh.ix[row, "mark"] == 1) or (sh.ix[row, "mark"] == -1):
+        sh.ix[row, "close_font"] = sh.ix[row, "close"]
+    else:
+        sh.ix[row, "close_font"] = sh.ix[(row-1), "close"]
+    #sh["change_rate"] = (sh["open"] - sh["close_font"])/sh["open"]
+
+print(sh[:5])
+
+
+
 
 
