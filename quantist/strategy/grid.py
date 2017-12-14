@@ -33,9 +33,12 @@ import matplotlib.pyplot as plt
 """
 
 data_path = "../data/pool/sh.csv"
-sh = pd.read_csv(data_path)
-#print(sh[:3])
+sh = pd.read_csv(data_path).sort_index(ascending=False)
+sh.reset_index(inplace=True)
+sh['date'] = pd.to_datetime(sh['date'])
 
+print(len(sh["close"]))
+print("---------------------------------------------------------------------------------")
 
 """
 2 Construct dataform
@@ -92,17 +95,66 @@ Example:
     other:
         
         
-        
 """
-sh["change_base"] = (sh["close"] - 2940.006)*100/sh["close"]
-#plt.show(plt.plot(sh["basic_change"]))
-sh["capital"] = 10000000
-sh["label"] = 1
-sh["close_font"] = 2940.006
+
+"""
+basic date
+
+capital_base（起始资金）
+commission（手续费）
+    buycost
+    sellcost
+slippage（滑点）
+    买入股票的交易价格调整为 S × (1 + value)
+    卖出股票的交易价格调整为 S × (1 - value)  
+ order(s, 100)
+ 
+Capitcal & balance
+share(1)---straddle(100)
+max_history_window（回溯长度）
+
+"""
+date_base = 2014-12-10
+close_base = sh.ix[0, "close"] #2940.006
+capital = 10000000
+sh["balance"] = 10000000
+sell_price = 0.3 #If change_rate > sell_rate, sell the stock
+buy_price = -0.3 #If change_rate > sell_rate, sell the stock
+sell_rate = 0.1 #count/balance???
+buy_rate = 0.1 #count/balance???
+
+#set_commission(PerOrder(buy_cost=0.0003, sell_cost=0.0013, min_cost=5))
+buy_cost = 0.0003
+sell_commission = 0.0013
+min_cost = 5
+
+"""
+change_base:Calculate the maximum retracement
+            max - min
+"""
+sh["change_base"] = (sh["close"] - close_base)/sh["close"]
+retracement_max = sh["change_base"].max()
+retracement_min = sh["change_base"].min()
+print(retracement_max, retracement_min,retracement_max-retracement_min)
+print("---------------------------------------------------------------------------------")
+
+"""
+close_font: closed price of latest trade
+"""
+sh["close_font"] = close_base
+
+"""
+change_rate:rate between now and close_font
+"""
 sh["change_rate"] = (sh["open"] - sh["close_font"])/sh["open"]
 
-sh["mark"] = sh["change_rate"].map(lambda x: 1 if x>0.1 else (-1 if x<-0.5 else 0 ))
-
+"""
+mark: 
+    change_rate > sell_price, mark=1, sell
+    change_rate < buy_price, mark=-1, buy
+    others,                  mark=0, no handler
+"""
+sh["mark"] = sh["change_rate"].map(lambda x: 1 if x>sell_price else (-1 if x<-buy_price else 0 ))
 # Other method to calculate mark
 # def change(num):
 #     if num > 0.03:
@@ -113,30 +165,51 @@ sh["mark"] = sh["change_rate"].map(lambda x: 1 if x>0.1 else (-1 if x<-0.5 else 
 #         return 0
 # sh["mark"] = sh["change_rate"].map(change)
 
-print(sh[0:3])
-print("-------------------------------")
+#print(sh[0:3])
+print("---------------------------------------------------------------------------------")
 
 """
-account??
-"""
-for row in range(len(sh["date"])):
-    if sh.ix[row,"mark"] == 1:
-        #print(sh.iloc[m].ma10)
-        sh.ix[row,"cc"] = sh.ix[row,"capital"] - sh.ix[row,"open"]
+close_font: Calculate close_font again
+
+    change_base  change_rate     close  close_font       date  mark      open  \
+0      0.000000    -0.029435  2940.006    2940.006 2014-12-10    -1  2855.940   
+1     -0.487500    -0.009497  2925.743    2925.743 2014-12-11    -1  2912.346
 
 """
-close_font
-"""
-for row in range(len(sh["close_font"])):
-    if (row <= 0 or sh.ix[row, "mark"] == 1) or (sh.ix[row, "mark"] == -1):
+sh["mark_rate"] = 0
+for row in range(len(sh["close"])):
+    if (row == 0):
         sh.ix[row, "close_font"] = sh.ix[row, "close"]
+        sh["mark_rate"] = 0
+
+
+    elif (sh.ix[row, "mark"] == 1):
+        sh.ix[row, "close_font"] = sh.ix[row, "close"]
+    elif (sh.ix[row, "mark"] == -1):
+        sh.ix[row, "close_font"] = sh.ix[row, "close"]
+
     else:
-        sh.ix[row, "close_font"] = sh.ix[(row-1), "close"]
-    #sh["change_rate"] = (sh["open"] - sh["close_font"])/sh["open"]
-
-print(sh[:5])
+        sh.ix[row, "close_font"] = sh.ix[(row-1), "close_font"]
 
 
+
+result = {"date":sh["date"],"open":sh["open"],"close":sh["close"],"p_change":sh["p_change"],
+          "close_font":sh["close_font"],"change_rate":sh["change_rate"],"change_base":sh["change_base"],
+          "date":sh["date"],"mark":sh["mark"],"mark":sh["mark"]}
+result = pd.DataFrame(result)
+
+print(result[:10])
+print("------------------------")
+
+"""
+The first buy_price or sell_price row
+"""
+c = []
+for row in range(len(sh["change_base"])):
+    if (sh.ix[row, "change_base"] > 0.03):
+        c.append(row)
+        break;
+print(c)
 
 
 
