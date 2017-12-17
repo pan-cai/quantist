@@ -47,6 +47,10 @@ close_sell = []
 mark_no_hanler = 0
 sh["change_base"] = 0
 #print("change_base  ", "  mark", "p_change")
+
+"""
+Calculate mark from change_base, change_base is template paramerter
+"""
 for row in range((len(sh["close"]))):
     sh.ix[row,"change_base"] = (sh.ix[row,"close"] - close_base) / sh.ix[row, "close"]
     if sh.ix[row, "change_base"] > 0.03:
@@ -67,9 +71,7 @@ for row in range((len(sh["close"]))):
 
 
 
-result = {"date": sh["date"], "open": sh["open"], "close": sh["close"],
-          "change_base": sh["change_base"],"mark":sh["mark"]}
-result = pd.DataFrame(result)
+
 
 #print(result[:100])
 
@@ -90,5 +92,50 @@ print(close_buy_y)
 plt.scatter(close_sell_x,close_sell_y, label="close_sell")
 plt.scatter(close_buy_x,close_buy_y, label="close_buy")
 plt.legend(loc="best")
-plt.show()
+#plt.show()
 
+print("---------------------------------------------------------------")
+
+date_base = 2014 - 12 - 10
+close_base = sh.ix[0, "close"]  # 2940.006
+capital = 10000000
+#sh["balance"] = 10000000
+sell_price = 0.3  # If change_rate > sell_rate, sell the stock
+buy_price = -0.3  # If change_rate > sell_rate, sell the stock
+sell_rate = 0.1  # count/balance???
+buy_rate = 0.1  # count/balance???
+
+buy_cost = 0.0003
+sell_commission = 0.0013
+min_cost = 5
+
+buy_first_arte = 0.2 #Buy rate at first trade
+
+"""
+Calculate balance
+"""
+balance = 0
+base_amount = 100
+for row in range((len(sh["close"]))):
+
+     if row == 0:
+        sh[row,"trade_amount"] = capital*buy_first_arte/sh.ix[row,"open"]
+        sh[row,"balance"] = capital-sh[row,"trade_amount"]*sh.ix[row,"open"]
+        balance = sh.ix[row, "balance"]
+     else:
+        if sh.ix[row, "mark"] == mark_buy:
+            sh.ix[row+1, "trade_amount"] = base_amount
+            sh.ix[row+1,"balance"] = balance - sh[row+1, "trade_amount"] * sh.ix[row+1, "open"]
+            balance = sh.ix[row,"balance"]
+        elif sh.ix[row, "mark"] == mark_sell:
+            sh.ix[row+1, "trade_amount"] = base_amount
+            sh[row+1,"balance"] = balance + sh[row+1, "trade_amount"] * sh.ix[row+1, "open"]
+            balance = sh.ix[row-1, "balance"]
+        else:
+            sh.ix[row, "trade_amount"] = 0
+            sh.ix[row,"balance"] = sh.ix[row-1,"balance"]
+            balance = sh.ix[row-1, "balance"]
+
+result = {"date": sh["date"], "open": sh["open"], "close": sh["close"],
+          "change_base": sh["change_base"],"mark":sh["mark"],"balance":sh["balance"],"trade_amount":sh["trade_amount"]}
+print(result)
