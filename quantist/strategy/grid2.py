@@ -119,17 +119,19 @@ base_amount = 100
 for row in range((len(sh["close"]))):
 
      if row == 0:
-        sh[row,"trade_amount"] = capital*buy_first_arte/sh.ix[row,"open"]
-        sh[row,"balance"] = capital-sh[row,"trade_amount"]*sh.ix[row,"open"]
+        sh.ix[row,"trade_amount"] = capital*buy_first_arte/sh.ix[row,"open"]
+        sh.ix[row,"balance"] = capital-sh.ix[row,"trade_amount"]*sh.ix[row,"open"]
+        #print(sh.ix[row, "trade_amount"], sh.ix[row, "balance"])
         balance = sh.ix[row, "balance"]
+
      else:
         if sh.ix[row, "mark"] == mark_buy:
             sh.ix[row+1, "trade_amount"] = base_amount
-            sh.ix[row+1,"balance"] = balance - sh[row+1, "trade_amount"] * sh.ix[row+1, "open"]
+            sh.ix[row+1,"balance"] = balance - sh.ix[row+1, "trade_amount"] * sh.ix[row+1, "open"]
             balance = sh.ix[row,"balance"]
         elif sh.ix[row, "mark"] == mark_sell:
             sh.ix[row+1, "trade_amount"] = base_amount
-            sh[row+1,"balance"] = balance + sh[row+1, "trade_amount"] * sh.ix[row+1, "open"]
+            sh.ix[row+1,"balance"] = balance + sh.ix[row+1, "trade_amount"] * sh.ix[row+1, "open"]
             balance = sh.ix[row-1, "balance"]
         else:
             sh.ix[row, "trade_amount"] = 0
@@ -138,4 +140,6 @@ for row in range((len(sh["close"]))):
 
 result = {"date": sh["date"], "open": sh["open"], "close": sh["close"],
           "change_base": sh["change_base"],"mark":sh["mark"],"balance":sh["balance"],"trade_amount":sh["trade_amount"]}
-print(result)
+result = pd.DataFrame(result)
+
+print(result[:100])
