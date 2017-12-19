@@ -35,10 +35,10 @@ class GetDataFromTushare(object):
     Code is the stock code
     If save is True, save the data, else return the stock data. Default don't save
     Must write sava is true or false
+    path:Where the data stored
     """
 
-    def getStockData(code=None, start=None, end=None, save=True):
-        PATH = "./pool/"
+    def getStockData(path, code=None, start=None, end=None, save=True):
         data = ts.get_hist_data(str(code), start=None, end=None);
         #Change the form
         # data.reset_index(inplace=True)
@@ -47,26 +47,33 @@ class GetDataFromTushare(object):
         data = cdf.ChangeDataForm.to_day_form(data)
         # Save data
         if save:
-            data.to_csv(PATH + "s" + code + ".csv")
+            data.to_csv(path + "s" + code + ".csv")
             print("Save " + code)
             return data
         # Don't sava data
         else:
             return data
-
-    def getSavedStock(code=None):
-        PATH = "./pool/" + "s" + code + ".csv"
+    """
+    Get data from path, if it is not existed, get it from tushare and saved to pool.
+    """
+    def getSavedStock(path,code):
         try:
-            data = pd.read_csv(PATH)
-            print("Get data ...")
+            data = pd.read_csv(path + "s" + code + ".csv")
+            print("Get data from pool ...")
             return data
         except:
             try:
                 print('Data doses not exit in pool, get it from tushare ... ')
                 data = ts.get_hist_data(str(code))
+                data.to_csv(path + "s" + code + ".csv")
+                print("Saved " + code + " to " + path)
                 return data
             except:
-                print('Data doses not exit')
+                print('Data or code is not existed')
+                return None
+
+    def get_today_all(self):
+        return ts.get_today_all()
 
     def getNlpData(self):
         pass
@@ -82,6 +89,13 @@ class GetDataFromTushare(object):
 data = GetDataFromTushare.getStockData('600848', save=True)
 print(data[:3])
 """
-data = GetDataFromTushare.getSavedStock('600848')
+
+"""
+path = "./pool/"
+data = GetDataFromTushare.getSavedStock(path,'600848')
 print(data[:3])
+"""
+
+
+
 

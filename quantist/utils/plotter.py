@@ -27,20 +27,21 @@ from quantist.data.get_and_save_data import GetDataFromTushare as gdft
 from quantist.utils import change_data_form as cdf
 import matplotlib.pyplot as plt
 import seaborn as sns
+import tushare as ts
 
 
-class PlotSingleStock(object):
+class Plotter(object):
     """
     Plot basic parameter
     parameter: close, p_change
     Example:
-        plot_single_stock('600848','close')
+        path = "../data/pool/"
+        Plotter.plot_single_stock(path, 'close','600848')
     """
-
-    def plot_single_stock(code, parameter):
-        data = gdft.getSavedStock(code)
-        #Formed the data
-        data = cdf.ChangeDataForm.to_day_form(data)
+    def plot_single_stock(path, parameter, code=None,):
+        data_gdft = gdft.getSavedStock(path, code)
+        # Formed the data
+        data = cdf.ChangeDataForm.to_day_form(data_gdft)
         data[parameter].plot(label=code)
         plt.legend(loc='best')
         plt.title(code)
@@ -48,6 +49,7 @@ class PlotSingleStock(object):
 
 
 # Sample test
-PlotSingleStock.plot_single_stock('600848','close')
+path = "../data/pool/"
+Plotter.plot_single_stock(path, 'close','600327')
 
-#plt.show(plt.plot([x for x in range(5)]))
+# plt.show(plt.plot([x for x in range(5)]))

@@ -36,12 +36,16 @@ For day
 """
 class ChangeDataForm(object):
 
-    # For the data from tushare or DataForme form.
+    # Get the data from tushare or DataForme form.
     def to_day_form(data):
-        data.reset_index(inplace=True)
-        data['date'] = pd.to_datetime(data['date'])
-        data = data.set_index('date')
-        return data
+        if (data.empty):
+            print("Data is None")
+            return None
+        else:
+            data.reset_index(inplace=True)
+            data['date'] = pd.to_datetime(data['date'])
+            data = data.set_index('date')
+            return data
 
     # Change the form from DataForm to json
     # ready to complate...
