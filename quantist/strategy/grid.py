@@ -238,6 +238,11 @@ buy_first_arte = 0.2  # Buy rate at first trade
 
 """
 # Calculate balance
+
+# open和前天的close比较得到mark
+# mark=0,无操作，amoun=0,balance=前天balance
+# mark=1,买入，amoun=100,balance=(前天balance - open*amount)
+# mark=-1,卖出，amoun=0,balance=(前天balance + open*amount)
 """
 # initializtion
 balance = 0
@@ -251,14 +256,6 @@ sh.ix[0, "balance"] = capital - sh.ix[0, "trade_amount"] * sh.ix[0, "open"]
 # print(sh.ix[row, "trade_amount"], sh.ix[row, "balance"])
 balance = sh.ix[0, "balance"]
 
-"""
-Get balance
-
-# open和前天的close比较得到mark
-# mark=0,无操作，amoun=0,balance=前天balance
-# mark=1,买入，amoun=100,balance=(前天balance - open*amount)
-# mark=-1,卖出，amoun=0,balance=(前天balance + open*amount)
-"""
 for row in close_list[1:len(sh["close"])]:  # row 1~731, total num is 733 (0~732)
     # print(row)
     if sh.ix[row, "mark"] == mark_no_hanler:
@@ -358,6 +355,8 @@ Annualized yield = (return on investment / principal) / (investment days / 365) 
 Annualized income = principal × annualized rate of return
 Real income = principal × annualized yield × investment days / 365
 """
+
+"""
 grid_data = pd.read_csv(result_path + "strategy_grid.csv")
 #print(grid_data[:3])
 # plt.plot(grid_data["close"])
@@ -384,3 +383,4 @@ alpha = annualized_return - treasury_return - beta*(benchmark_annualized_return 
 # information_ratio = (annualized_return - benchmark_annualized_return)/....
 # max_drawdown = np.max(1 - )
 # turnover_rate = ...
+"""
