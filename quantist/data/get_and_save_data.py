@@ -90,9 +90,9 @@ data = GetDataFromTushare.getStockData('600848', save=True)
 print(data[:3])
 """
 path = "./pool/"
-data = GetDataFromTushare.getStockData(path,'hs300', save=True)
+data = GetDataFromTushare.getStockData(path,'sh', save=False)
+data.to_excel(path+"sh.xls")
 print(data[:3])
-
 
 """
 path = "./pool/"
