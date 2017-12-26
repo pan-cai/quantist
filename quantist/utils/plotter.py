@@ -26,7 +26,9 @@ Description:
 from quantist.data.get_and_save_data import GetDataFromTushare as gdft
 from quantist.utils import change_data_form as cdf
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
+import pandas as pd
 import tushare as ts
 
 
@@ -47,9 +49,22 @@ class Plotter(object):
         plt.title(code)
         plt.show()
 
+    def plot_heatmap(self,data):
+        sns.heatmap(data.corr(), annot=True, cmap='RdYlGn', linewidths=0.1, vmin=0)
+        plt.show()
+
 
 # Sample test
-path = "../data/pool/"
-Plotter.plot_single_stock(path, 'close','600327')
+# path = "../data/pool/"
+# Plotter.plot_single_stock(path, 'close','600327')
 
 # plt.show(plt.plot([x for x in range(5)]))
+
+
+
+#Test plot_heatmap
+"""
+
+
+
+"""
