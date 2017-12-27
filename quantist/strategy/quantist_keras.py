@@ -66,6 +66,7 @@ class quantist_keras(object):
         plt.plot(x_test,y_pred)
         plt.show()
 
+
 """
 Sample test
 """
