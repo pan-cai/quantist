@@ -31,7 +31,7 @@ import seaborn as sns
 data_path = "../data/pool/"
 result_path = "../data/result/"
 
-data = pd.read_excel(data_path + "sh2.xls")
+data = pd.read_excel(data_path + "Google_Stock_Price_Test.xls")
 
 print(data['close'][:5])
 """

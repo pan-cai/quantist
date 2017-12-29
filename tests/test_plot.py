@@ -37,9 +37,9 @@ class TestPlot(TestCase):
         data_path = "../quantist/data/pool/"
         result_path = "../data/result/"
 
-        data = pd.read_excel(data_path + "sh2.xls")
+        data = pd.read_excel(data_path + "Google_Stock_Price_Test.xls")
 
-        print(data['close'][:5])
+        print(data['Close'][:5])
         """
         # 0    3297.06
         # 1    3300.06
@@ -49,7 +49,7 @@ class TestPlot(TestCase):
         # Name: close, dtype: float64
         """
         print("--------------------------------------")
-        values = data['close'].values.reshape(-1, 1)
+        values = data['Close'].values.reshape(-1, 1)
         print(values[:5])
         """
         [[ 3297.06]

@@ -39,7 +39,7 @@ class QuantistTorch(object):
     def demo1(self):
         data_path = "../data/pool/"
         result_path = "../data/result/"
-        data = pd.read_excel(data_path + "sh2.xls")
+        data = pd.read_excel(data_path + "Google_Stock_Price_Test.xls")
 
         x = np.array(data['close'])
         y = np.array(data['open'])

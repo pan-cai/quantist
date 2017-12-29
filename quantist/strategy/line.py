@@ -96,7 +96,7 @@ result_path = "../data/result/"
 # print(t)
 
 # Test sm_ols
-data = pd.read_excel(data_path + "sh2.xls")
+data = pd.read_excel(data_path + "Google_Stock_Price_Test.xls")
 print(list(data['close'])[0:3])
 LinearRegression.sm_ols(data['close'])
 

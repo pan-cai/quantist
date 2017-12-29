@@ -53,7 +53,7 @@ def create_dataset(dataset, lookback):
     return numpy.array(dataX), numpy.array(dataY)
 
 #dataset = get_historical_close_data(companies)
-dataset = pd.read_excel(data_path + 'sh2.xls')
+dataset = pd.read_excel(data_path + 'Google_Stock_Price_Test.xls')
 
 dataset_norm = normalization(dataset['close'].values.reshape(-1,1))
 
