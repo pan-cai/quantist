@@ -1,4 +1,4 @@
-data_path = "../quantist/data/pool/"
+
 
 import pandas as pd
 from keras.layers.core import Dense, Activation, Dropout
@@ -10,17 +10,8 @@ import math
 import numpy
 import matplotlib.pyplot as plt
 
-companies = 'GOOG'
+
 look_back = 1
-
-
-def get_historical_close_data(name):
-    url = "https://www.google.com/finance/historical?q=%s&startdate=01-Jan-2000&output=csv" % name
-
-    data = pd.read_csv(url)
-    data = data.loc[:, ('Date', 'Close')]
-    data = data.sort_index(ascending=False)
-    return data
 
 
 def normalization(data):
@@ -52,10 +43,13 @@ def create_dataset(dataset, lookback):
         dataY.append(dataset[i + lookback, ])
     return numpy.array(dataX), numpy.array(dataY)
 
-#dataset = get_historical_close_data(companies)
-dataset = pd.read_excel(data_path + 'Google_Stock_Price_Test.xls')
 
-dataset_norm = normalization(dataset['close'].values.reshape(-1,1))
+data_path = "../quantist/data/pool/"
+#dataset = pd.read_excel(data_path + 'Google_Stock_Price_Train.xls')
+dataset = pd.read_excel(data_path + 'sh2.xls')
+dataset['Close'] = dataset['close']
+
+dataset_norm = normalization(dataset['Close'].values.reshape(-1,1))
 
 train_dataset, test_dataset = split_train_test(dataset_norm)
 
@@ -75,10 +69,10 @@ model.fit(train_X, train_y, epochs=3, batch_size=1, verbose=2)
 trainPredict = model.predict(train_X)
 testPredict = model.predict(test_X)
 
-trainPredict = de_normalization(dataset['close'].values.reshape(-1,1), trainPredict)
-train_y = de_normalization(dataset['close'].values.reshape(-1,1),train_y)
-testPredict = de_normalization(dataset['close'].values.reshape(-1,1), testPredict)
-test_y = de_normalization(dataset['close'].values.reshape(-1,1),test_y)
+trainPredict = de_normalization(dataset['Close'].values.reshape(-1,1), trainPredict)
+train_y = de_normalization(dataset['Close'].values.reshape(-1,1),train_y)
+testPredict = de_normalization(dataset['Close'].values.reshape(-1,1), testPredict)
+test_y = de_normalization(dataset['Close'].values.reshape(-1,1),test_y)
 
 trainScore = math.sqrt(mean_squared_error(train_y, trainPredict[:,0]))
 print('Train Score: %.2f RMSE' % (trainScore))
@@ -92,9 +86,9 @@ trainPredictPlot[look_back:len(trainPredict)+look_back, ] = trainPredict[:,0].re
 # shift test predictions for plotting
 testPredictPlot = numpy.empty_like(dataset_norm)
 testPredictPlot[:,] = numpy.nan
-testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset['close'])-1, ] = testPredict[:,0].reshape(-1,1)
+testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset['Close'])-1, ] = testPredict[:,0].reshape(-1,1)
 # plot baseline and predictions.reshape(-1,1)
-plt.plot(de_normalization(dataset['close'].values.reshape(-1,1),dataset_norm))
+plt.plot(de_normalization(dataset['Close'].values.reshape(-1,1),dataset_norm))
 plt.plot(trainPredictPlot)
 plt.plot(testPredictPlot)
 plt.show()

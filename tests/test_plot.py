@@ -25,6 +25,7 @@ from sklearn.preprocessing import MinMaxScaler
 import seaborn as sns
 import pandas as pd
 import tushare as ts
+from quantist.utils import plotter
 """
 Description:
 """
@@ -83,3 +84,11 @@ class TestPlot(TestCase):
 
         sns.heatmap(data.corr(), annot=True, cmap='RdYlGn', linewidths=0.1, vmin=0)
         plt.show()
+
+    def test_plot_kline(self):
+        k = plotter()
+        data_path = "../quantist/data/pool/"
+        result_path = "../quantist/data/result/"
+        #result_name = 'plot_kline'
+        data = pd.read_excel(data_path + 'sh2.xls')
+        k.plot_kline(data, show_num=120)  # sh

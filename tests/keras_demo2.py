@@ -15,7 +15,8 @@ from IPython.display import Image
 from IPython.core.display import HTML
 
 #Reading the csv  file from local
-crl = pd.read_csv("C:/Users/Shantam Gupta/Desktop/RNN/Data/crl.csv", index_col=False)
+data_path = "../quantist/data/pool/"
+crl = pd.read_csv(data_path+'crl.csv')
 
 #Computing the price ratio as feature
 crl['close_ratio'] = (crl['Close']/crl['Close'].shift(1) -1 ).fillna(0)
@@ -29,7 +30,7 @@ crl.head(),
 
 
 #Reading the csv file from local
-nbi = pd.read_csv("C:/Users/Shantam Gupta/Desktop/RNN/Data/nbi.csv", index_col=False)
+nbi = pd.read_csv(data_path+'nbi.csv')
 
 #Renaming the columns to avoid clash while joining crl and nbi later on
 nbi.columns = ['Date','nbi_open','nbi_high','nbi_low','nbi_close','nbi_adjclose','nbi_volume']
